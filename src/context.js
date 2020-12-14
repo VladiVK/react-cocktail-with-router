@@ -16,7 +16,11 @@ const AppProvider = ({ children }) => {
   const [searchTerm, setSearchTerm] = useState('a');
   const [cocktails, setCocktails] = useState([]);
 
-  const fetchDrinks = async () => {
+
+  // we need useCallback because:
+  // we create fetchDrinks every time when rerender component 
+  // if we add it do dependencies of useEffect === it is loop
+  const fetchDrinks = useCallback( async () => {
 
     setLoading(true);
 
@@ -54,15 +58,16 @@ const AppProvider = ({ children }) => {
       }
 
       setLoading(false);
+
     } catch (error) {
       console.log('error');
       setLoading(false);
     }
-  };
+  }, [searchTerm]);
 
   useEffect(() => {
     fetchDrinks();
-  }, [searchTerm]);
+  }, [searchTerm, fetchDrinks]);
 
   return (
     <AppContext.Provider
